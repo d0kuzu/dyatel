@@ -1,3 +1,5 @@
+import time
+
 from fastapi import FastAPI, UploadFile, File
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
@@ -14,7 +16,7 @@ app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 # Эндпоинт для загрузки
 @app.post("/upload")
 async def upload_photo(photo: UploadFile = File(...)):
-    file_path = UPLOAD_DIR / photo.filename
+    file_path = UPLOAD_DIR / f"{int(time.time())}.png"
     contents = await photo.read()
     with open(file_path, "wb") as f:
         f.write(contents)
