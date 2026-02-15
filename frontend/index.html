@@ -5,50 +5,135 @@
   <title>Upload & Gallery</title>
 </head>
 <body>
-  <h1>Upload Image</h1>
-  <form id="uploadForm">
-    <input type="file" name="photo" required>
-    <button type="submit">Upload</button>
-  </form>
+  <div class="container">
+    <header>
+      <h1>Photo Gallery</h1>
+      <button id="refreshBtn" onclick="loadGallery()">Refresh</button>
+    </header>
+    <div id="gallery" class="gallery-grid"></div>
+    <div id="status" class="status-message"></div>
+  </div>
 
-  <h2>Gallery</h2>
-  <div id="gallery"></div>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    header {
+      display: flex;
+      justify_content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      color: #2c3e50;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .gallery-item {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+    .gallery-item:hover {
+      transform: translateY(-5px);
+    }
+    .gallery-item img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+    }
+    .gallery-item .caption {
+      padding: 10px;
+      font-size: 0.85rem;
+      color: #666;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .status-message {
+      text-align: center;
+      margin-top: 20px;
+      color: #666;
+    }
+  </style>
 
   <script>
-    const form = document.getElementById("uploadForm");
     const gallery = document.getElementById("gallery");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const file = form.photo.files[0];
-      if (!file) return;
-
-      const formData = new FormData();
-      formData.append("photo", file);
-
-      await fetch("/upload", {
-        method: "POST",
-        body: formData
-      });
-
-      loadGallery();
-    });
+    const statusDiv = document.getElementById("status");
 
     async function loadGallery() {
-      gallery.innerHTML = "";
-      const res = await fetch("/photos");
-      const data = await res.json();
-      data.photos.forEach(url => {
-        const img = document.createElement("img");
-        img.src = url;
-        img.width = 150;
-        img.style.margin = "5px";
-        gallery.appendChild(img);
-      });
+      statusDiv.textContent = "Loading...";
+      try {
+        const res = await fetch("/photos");
+        if (!res.ok) throw new Error("Failed to fetch photos");
+        const data = await res.json();
+        
+        gallery.innerHTML = "";
+        
+        if (data.photos.length === 0) {
+          statusDiv.textContent = "No photos found.";
+          return;
+        }
+
+        data.photos.forEach(url => {
+          const item = document.createElement("div");
+          item.className = "gallery-item";
+          
+          const img = document.createElement("img");
+          img.src = url;
+          img.loading = "lazy";
+          
+          const caption = document.createElement("div");
+          caption.className = "caption";
+          // Extract filename from URL for caption
+          caption.textContent = url.split('/').pop();
+
+          item.appendChild(img);
+          item.appendChild(caption);
+          gallery.appendChild(item);
+        });
+        statusDiv.textContent = "";
+      } catch (err) {
+        console.error(err);
+        statusDiv.textContent = "Error loading gallery. Please try again.";
+      }
     }
 
-    // Загрузка галереи при старте
+    // Load on start
     loadGallery();
+
+    // Auto-refresh every 30 seconds (optional, user didn't ask but good for "viewing" use case)
+    setInterval(loadGallery, 30000);
   </script>
 </body>
 </html>
