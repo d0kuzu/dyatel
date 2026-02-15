@@ -3,7 +3,7 @@ import keyboard
 import io
 import requests
 
-ENDPOINT = "http://localhost:8000/upload"  # должен совпадать с FastAPI
+ENDPOINT = "https://api.zerde.co/dyatel/upload"  # должен совпадать с FastAPI
 
 def send_screenshot():
     # делаем скриншот

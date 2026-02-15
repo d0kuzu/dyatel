@@ -2,6 +2,7 @@ import time
 
 from fastapi import FastAPI, UploadFile, File
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pathlib import Path
 
 app = FastAPI()
@@ -9,6 +10,11 @@ app = FastAPI()
 # Папка для хранения загруженных файлов
 UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
+
+# Serve the frontend
+@app.get("/")
+async def read_index():
+    return FileResponse('frontend/index.html')
 
 # Доступ к файлам через браузер
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
