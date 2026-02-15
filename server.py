@@ -31,7 +31,8 @@ async def upload_photo(photo: UploadFile = File(...)):
 # Эндпоинт для списка всех загруженных файлов
 @app.get("/photos")
 def list_photos():
-    return {"photos": [f"/uploads/{f.name}" for f in UPLOAD_DIR.iterdir() if f.is_file()]}
+    # Prepend /dyatel prefix as app is behind nginx
+    return {"photos": [f"/dyatel/uploads/{f.name}" for f in UPLOAD_DIR.iterdir() if f.is_file()]}
 
 if __name__ == "__main__":
     import uvicorn
