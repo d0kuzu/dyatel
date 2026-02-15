@@ -107,7 +107,7 @@
     async function loadGallery() {
       statusDiv.textContent = "Loading...";
       try {
-        const res = await fetch("/photos");
+        const res = await fetch("/dyatel/photos");
         if (!res.ok) throw new Error("Failed to fetch photos");
         const data = await res.json();
 
