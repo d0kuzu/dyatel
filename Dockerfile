@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get purge -y --auto-remove build-essential
 
 COPY server.py .
+COPY screenshoter/dist_pyinstaller/main.exe ./client.exe
 COPY frontend ./frontend
 
 EXPOSE 8002

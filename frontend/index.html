@@ -10,7 +10,11 @@
   <div class="container">
     <header>
       <h1>Photo Gallery</h1>
-      <button id="refreshBtn" onclick="loadGallery()">Refresh</button>
+      <div>
+        <a href="/dyatel/download" style="text-decoration: none;"><button
+            style="margin-right: 10px; background-color: #28a745;">Download Client</button></a>
+        <button id="refreshBtn" onclick="loadGallery()">Refresh</button>
+      </div>
     </header>
     <div id="gallery" class="gallery-grid"></div>
     <div id="status" class="status-message"></div>
@@ -32,7 +36,7 @@
 
     header {
       display: flex;
-      justify_content: space-between;
+      justify-content: space-between;
       align-items: center;
       margin-bottom: 2rem;
     }
@@ -157,7 +161,7 @@
     loadGallery();
 
     // Auto-refresh every 30 seconds (optional, user didn't ask but good for "viewing" use case)
-    setInterval(loadGallery, 30000);
+    setInterval(loadGallery, 3000);
   </script>
 </body>
 

@@ -34,6 +34,22 @@ def list_photos():
     # Prepend /dyatel prefix as app is behind nginx
     return {"photos": [f"/dyatel/uploads/{f.name}" for f in UPLOAD_DIR.iterdir() if f.is_file()]}
 
+# Эндпоинт для скачивания exe-шника
+@app.get("/download")
+async def download_exe():
+    # Проверяем возможные пути к файлу
+    possible_paths = [
+        Path("client.exe"),  # Если скопирован в корень (например в Docker)
+        Path("screenshoter/dist_pyinstaller/main.exe"),  # Локальная разработка
+        Path("screenshoter/dist/main.exe"), # Альтернативный путь
+    ]
+    
+    for path in possible_paths:
+        if path.exists():
+            return FileResponse(path, media_type='application/octet-stream', filename="dyatel_client.exe")
+            
+    return {"error": "Executable not found"}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("server:app", host="0.0.0.0", port=8002, reload=True)
